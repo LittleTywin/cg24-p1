@@ -18,3 +18,10 @@ def vector_interp(p1,p2,V1,V2,coord,dim):
     Returns:
     V (numpy.ndarray) : (3,) interpolated value
     """
+
+    denominator = p2[dim-1]-p1[dim-1]
+    if denominator == 0:
+        return (V1+V2)/2
+    interpolation_factor = (coord-p1[dim-1])/denominator
+    interpolated_value = V1 + interpolation_factor * (V2-V1)
+    return interpolated_value
