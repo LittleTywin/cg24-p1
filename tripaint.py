@@ -56,6 +56,35 @@ def f_shading(img, vertices, vcolors):
     dy = vertices[:,1][sides[:,1]] - vertices[:,1][sides[:,0]]
     invm = dx/dy
 
+    horizontal_sides = np.isinf(invm)
+    point_sides = np.isnan(invm)
+    excluded_sides = np.logical_or(horizontal_sides,point_sides)
+    non_excluded_sides = np.logical_not(excluded_sides)
+    
+    #TODO paint horizontal and point sides
+
+    active_sides = np.array([False,False,False])
+    active_sides = np.logical_and ((sides_ymin==ymin),non_excluded_sides)
+    border_points_x = sides_xmin.astype(np.float64)
+
+    for y in range(ymin,ymax+1):
+        active_border_points_x = border_points_x[active_sides]
+        try:
+            sorted_abpx = np.sort(active_border_points_x)
+            sorted_abpx = np.round(sorted_abpx).astype(np.int32)
+            for x in range(sorted_abpx[0],sorted_abpx[-1]):
+                ret_img[x,y] = triangle_color
+        except:
+            pass#print("no active border points")
+        new_active_sides = (sides_ymin == y+1)
+        removed_active_sides = (sides_ymax == y)
+        active_sides = np.logical_or(active_sides, new_active_sides)
+        active_sides = np.logical_and(active_sides,np.logical_not(removed_active_sides))
+        active_sides = np.logical_and(active_sides, non_excluded_sides)
+        active_border_points_x_calc_index = np.logical_and(active_sides, np.logical_not(new_active_sides))
+        border_points_x[active_border_points_x_calc_index] += invm[active_border_points_x_calc_index]
+        
+
 
     return ret_img
 
