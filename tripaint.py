@@ -57,7 +57,8 @@ def f_shading(img, vertices, vcolors):
     invm = dx/dy
 
     if np.isnan(invm).all():
-        print("all")
+        ret_img[vertices[0]] = triangle_color
+        return ret_img
     if np.isnan(invm).any():
         #print(f"got isnan:\n{vertices}")
         #print(f"skipping")
