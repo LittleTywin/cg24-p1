@@ -44,8 +44,8 @@ def f_shading(img, vertices, vcolors):
     sides_x = vertices[:,0][sides]
     sides_y = vertices[:,1][sides]
     s_ind = np.argsort(sides_y,1)
-    sides_y_sorted = sides_y[s_ind]
-    sides_x_sorted = sides_x[s_ind]
+    sides_y_sorted = np.take_along_axis(sides_y,s_ind,1)
+    sides_x_sorted = np.take_along_axis(sides_x,s_ind,1)
     sides_ymin = sides_y_sorted[:,0]
     sides_ymax = sides_y_sorted[:,1]
     sides_xmin = sides_x_sorted[:,0]
@@ -68,7 +68,7 @@ def f_shading(img, vertices, vcolors):
     active_sides = np.array([False,False,False])
     new_active_sides = (sides_ymin == ymin)
     active_sides = np.logical_or(active_sides,new_active_sides)
-    active_sides = np.logical_not(active_sides,non_horizontal_sides)
+    active_sides = np.logical_and(active_sides,non_horizontal_sides)
 
     border_points_x = sides_xmin.astype(np.float64)
     rounded_border_points_x = np.round(border_points_x).astype(np.int32)
@@ -84,5 +84,6 @@ def f_shading(img, vertices, vcolors):
         unchanged_active_sides = np.logical_and(active_sides, np.logical_not(removed_active_sides))
         active_sides = np.logical_or(unchanged_active_sides,new_active_sides)
         border_points_x[unchanged_active_sides]+=invm[unchanged_active_sides]
+        rounded_border_points_x = np.round(border_points_x).astype(np.int32)
 
     return ret_img
