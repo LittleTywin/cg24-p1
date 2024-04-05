@@ -61,8 +61,6 @@ def f_shading(img, vertices, vcolors):
     excluded_sides = np.logical_or(horizontal_sides,point_sides)
     non_excluded_sides = np.logical_not(excluded_sides)
     
-    #TODO paint horizontal and point sides
-
     active_sides = np.array([False,False,False])
     active_sides = np.logical_and ((sides_ymin==ymin),non_excluded_sides)
     border_points_x = sides_xmin.astype(np.float64)
@@ -84,7 +82,19 @@ def f_shading(img, vertices, vcolors):
         active_border_points_x_calc_index = np.logical_and(active_sides, np.logical_not(new_active_sides))
         border_points_x[active_border_points_x_calc_index] += invm[active_border_points_x_calc_index]
         
-
+    #paint horizontal sides
+    if horizontal_sides.any():
+        for side in sides[horizontal_sides]:
+            x = vertices[:,0][side]
+            y = vertices[:,1][side]
+            for y in range(min(y),max(y)+1):
+                for x in range(min(x),max(x)+1):
+                    ret_img[x,y]=triangle_color
+    
+    #paint point sides
+    if point_sides.any():
+        for side in sides[point_sides]:
+            ret_img[vertices[side[0]][0],vertices[side[0]][1]]=triangle_color
 
     return ret_img
 
