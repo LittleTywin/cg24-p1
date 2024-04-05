@@ -56,9 +56,11 @@ def f_shading(img, vertices, vcolors):
     dy = vertices[:,1][sides[:,1]] - vertices[:,1][sides[:,0]]
     invm = dx/dy
 
+    if np.isnan(invm).all():
+        print("all")
     if np.isnan(invm).any():
-        print(f"got isnan:\n{vertices}")
-        print(f"skipping")
+        #print(f"got isnan:\n{vertices}")
+        #print(f"skipping")
         return ret_img
 
     horizontal_sides = np.isinf(invm)
@@ -76,6 +78,10 @@ def f_shading(img, vertices, vcolors):
     for y in range(ymin,ymax+1):
         active_rounded_border_points_x = rounded_border_points_x[active_sides]
         sorted_arbp = np.sort(active_rounded_border_points_x)
+        if len(sorted_arbp)==0:
+            continue
+        #TODO color horizontal sides
+
         for x in range(int(sorted_arbp[0]), int(sorted_arbp[-1])+1):
             ret_img[x,y] = triangle_color
 
@@ -90,14 +96,14 @@ def f_shading(img, vertices, vcolors):
 
 def render_img(faces,vertices,vcolors,depth,shading):
     face_depth = np.average(depth[faces],1)
-    s_ind = np.argsort(-1*face_depth)
+    s_ind = np.argsort(-face_depth)
     face_depth = face_depth[s_ind]
     faces = faces[s_ind]
 
     img = np.ones((512,512,3))
 
     if shading == "flat":
-        for i in range(faces.shape[0]+1):
+        for i in range(faces.shape[0]):
             img = f_shading(img,vertices[faces[i]], vcolors[faces[i]])
     else:
         pass
