@@ -87,3 +87,19 @@ def f_shading(img, vertices, vcolors):
         rounded_border_points_x = np.round(border_points_x).astype(np.int32)
 
     return ret_img
+
+def render_img(faces,vertices,vcolors,depth,shading):
+    face_depth = np.average(depth[faces],1)
+    s_ind = np.argsort(-1*face_depth)
+    face_depth = face_depth[s_ind]
+    faces = faces[s_ind]
+
+    img = np.ones((512,512,3))
+
+    if shading == "flat":
+        for i in range(faces.shape[0]+1):
+            img = f_shading(img,vertices[faces[i]], vcolors[faces[i]])
+    else:
+        pass
+
+    return img
