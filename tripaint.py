@@ -56,42 +56,6 @@ def f_shading(img, vertices, vcolors):
     dy = vertices[:,1][sides[:,1]] - vertices[:,1][sides[:,0]]
     invm = dx/dy
 
-    if np.isnan(invm).all():
-        ret_img[vertices[0]] = triangle_color
-        return ret_img
-    if np.isnan(invm).any():
-        #print(f"got isnan:\n{vertices}")
-        #print(f"skipping")
-        return ret_img
-
-    horizontal_sides = np.isinf(invm)
-    non_horizontal_sides = np.logical_not(horizontal_sides)
-
-    #find active sides for ymin
-    active_sides = np.array([False,False,False])
-    new_active_sides = (sides_ymin == ymin)
-    active_sides = np.logical_or(active_sides,new_active_sides)
-    active_sides = np.logical_and(active_sides,non_horizontal_sides)
-
-    border_points_x = sides_xmin.astype(np.float64)
-    rounded_border_points_x = np.round(border_points_x).astype(np.int32)
-
-    for y in range(ymin,ymax+1):
-        active_rounded_border_points_x = rounded_border_points_x[active_sides]
-        sorted_arbp = np.sort(active_rounded_border_points_x)
-        if len(sorted_arbp)==0:
-            continue
-        #TODO color horizontal sides
-
-        for x in range(int(sorted_arbp[0]), int(sorted_arbp[-1])+1):
-            ret_img[x,y] = triangle_color
-
-        new_active_sides = (sides_ymin == y+1)
-        removed_active_sides = (sides_ymax == y)
-        unchanged_active_sides = np.logical_and(active_sides, np.logical_not(removed_active_sides))
-        active_sides = np.logical_or(unchanged_active_sides,new_active_sides)
-        border_points_x[unchanged_active_sides]+=invm[unchanged_active_sides]
-        rounded_border_points_x = np.round(border_points_x).astype(np.int32)
 
     return ret_img
 
