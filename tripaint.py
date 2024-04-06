@@ -98,6 +98,9 @@ def f_shading(img, vertices, vcolors):
 
     return ret_img
 
+def g_shading(img, vertices, vcolors):
+    return f_shading(img,vertices,vcolors)
+
 def render_img(faces,vertices,vcolors,depth,shading):
     face_depth = np.average(depth[faces],1)
     s_ind = np.argsort(-face_depth)
@@ -110,6 +113,7 @@ def render_img(faces,vertices,vcolors,depth,shading):
         for i in range(faces.shape[0]):
             img = f_shading(img,vertices[faces[i]], vcolors[faces[i]])
     else:
-        pass
+        for i in range(faces.shape[0]):
+            img = g_shading(img, vertices[faces[i]], vcolors[faces[i]])
 
     return img
